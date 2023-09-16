@@ -1,20 +1,27 @@
 #!/usr/bin/python3
-""" prints the State object with the name passed as argument from the database
-"""
-import sys
-from model_state import Base, State
-from sqlalchemy import (create_engine)
-from sqlalchemy.orm import sessionmaker
+"""A script that adds object “Louisiana”
+to the database hbtn_0e_6_us"""
+
+
+from sys import argv
 
 
 if __name__ == "__main__":
-    engine = create_engine('mysql+mysqldb://{}:{}@localhost:3306/{}'
-                           .format(sys.argv[1], sys.argv[2], sys.argv[3]))
+
+    import sys
+    from model_state import Base, State
+    from sqlalchemy import create_engine
+    from sqlalchemy.orm import Session
+
+    engine = create_engine('mysql+mysqldb://{}:{}@localhost/{}'
+                           .format(sys.argv[1], sys.argv[2],
+                                   sys.argv[3]), pool_pre_ping=True)
     Base.metadata.create_all(engine)
-    Session = sessionmaker(bind=engine)
-    session = Session()
-    new_state = State(name='Louisiana')
-    session.add(new_state)
-    new_instance = session.query(State).filter_by(name='Louisiana').first()
-    print(new_instance.id)
+
+    session = Session(engine)
+    new_st = State(name='Louisiana')
+    session.add(new_st)
+    new_state = session.query(State).filter(State.name == 'Louisiana').first()
     session.commit()
+    print('{}'.format(new_state.id))
+    session.close())
